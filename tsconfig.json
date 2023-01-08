@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "allowJs": false,
+    "experimentalDecorators": true,
+    "declaration": true,
+    "declarationDir": "./types",
+    "baseUrl": ".",
+    "target": "esnext",
+    "module": "esnext",
+    "useDefineForClassFields": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "paths": {
+      "~/*": ["src/*"],
+      "*": ["types/*"] // 解决：找不到模块“vuex”或其相应的类型声明。
+    },
+    "typeRoots": ["./types", "./node_modules/@types"],
+    "types": ["element-plus/global", "node", "lodash", "lodash-es", "marked"], // 并不能解决：找不到模块“vuex”或其相应的类型声明。
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
