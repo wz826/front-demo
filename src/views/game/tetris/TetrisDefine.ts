@@ -1,3 +1,4 @@
+import _ from "lodash";
 import { reactive, ref } from "vue";
 
 // TODO 后续优化，落底前不写入地图，可以方便很多判断，且优化性能
@@ -232,10 +233,20 @@ const randomInt = (max: number = 7): number => {
   const factor = (max * 10) / max;
   return parseInt((Math.random() * factor).toFixed()) % max;
 };
+const currIdxs: number[] = [];
+const generateRandomIndex = () => {
+  for (let i = 0; i < 7; ++i) {
+    currIdxs.push(i);
+  }
+  _.shuffle(currIdxs);
+};
 /** 生成方块 */
 const generateRandomRect = (): RectType => {
-  // TODO 当前轮次的7种用玩后才可以用新的一轮
-  const typeIdx = randomInt();
+  // 当前轮次的7种用玩后才可以用新的一轮
+  if (currIdxs.length === 0) {
+    generateRandomIndex();
+  }
+  const typeIdx = currIdxs.pop() as number;
   calcRectCount(typeIdx);
   const rect = { ...Rects[typeIdx] };
   const points = rect.points.map((point) => ({ ...point }));
