@@ -12,7 +12,7 @@ import { Standard, Config, getMap, convertMapToRects } from './map'
 import { RewardType, RewardTypeEnmu, REWARD } from './defineReward'
 import { KeyFirstPlayer, KeySecondPlayer } from './defineKey'
 import { DirectionEnum, PlayerTank, createPlayerTank } from './tank/defineTank'
-import { onBeforeUnmount, onMounted, reactive, ToRefs, toRefs, } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ToRefs, toRefs, UnwrapNestedRefs, } from 'vue';
 useWebConfigStore().isWebFullScreen = true;
 // const RectTypeEnmu = Tank90Map.RectTypeEnmu;
 // 战场面积均为13 X 13 * 4
@@ -41,8 +41,9 @@ const rewardShip: RewardType = {
 };
 
 // TODO ts(2739)这个错误目前不影响运行和编译，暂时忽略
-const p1Tank: PlayerTank = reactive(createPlayerTank(refMap, true));
-const p2Tank: PlayerTank = reactive(createPlayerTank(refMap, false));
+// ts(2322) ts(2740) 已经修复，添加类型，2023年01月10日 10:04:45
+const p1Tank: UnwrapNestedRefs<PlayerTank> = reactive<PlayerTank>(createPlayerTank(refMap, true));
+const p2Tank: UnwrapNestedRefs<PlayerTank> = reactive<PlayerTank>(createPlayerTank(refMap, false));
 
 /** 加载完成时钩子 */
 onMounted(() => {
@@ -84,28 +85,28 @@ const onKeyDown = (e: KeyboardEvent) => {
 
 
 const moveUp =
-  (tank: PlayerTank) => {
+  (tank: UnwrapNestedRefs<PlayerTank>) => {
     // rewardShip.zoomTime = 2;
     // console.log('moveUp');
     tank.move(DirectionEnum.up);
   }
 const moveLeft =
-  (tank: PlayerTank) => {
+  (tank: UnwrapNestedRefs<PlayerTank>) => {
     // console.log('moveLeft');
     tank.move(DirectionEnum.left);
   }
 const moveDown =
-  (tank: PlayerTank) => {
+  (tank: UnwrapNestedRefs<PlayerTank>) => {
     // console.log('moveDown');
     tank.move(DirectionEnum.down);
   }
 const moveRight =
-  (tank: PlayerTank) => {
+  (tank: UnwrapNestedRefs<PlayerTank>) => {
     // console.log('moveRight');
     tank.move(DirectionEnum.right);
   }
 const fire =
-  (tank: PlayerTank) => {
+  (tank: UnwrapNestedRefs<PlayerTank>) => {
     // console.log('fire');
     tank.shoot();
   }

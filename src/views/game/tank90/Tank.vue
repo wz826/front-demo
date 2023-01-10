@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { PlayerTank, Standard as $ } from './tank/defineTank'
-import { Ref, ref, watchEffect } from 'vue';
+import { Ref, ref, UnwrapNestedRefs, watchEffect } from 'vue';
 import { Config } from './map';
 
 // tank  [tæŋk]
@@ -8,7 +8,7 @@ import { Config } from './map';
 
 export interface Props {
     config: Config,
-    tank: PlayerTank,
+    tank: UnwrapNestedRefs<PlayerTank>,
 }
 
 const props = defineProps<Props>();
@@ -25,7 +25,7 @@ const top: Ref<string> = ref('');
 const left: Ref<string> = ref('');
 const zIndex: Ref<number> = ref(1);
 
-const init = ({ config, tank }: { config: Config, tank: PlayerTank }) => {
+const init = ({ config, tank }: { config: Config, tank: UnwrapNestedRefs<PlayerTank> }) => {
     // const tank: TankType = props.tank
     // console.log(tank);
     zoomTime.value = config.zoomTime;
