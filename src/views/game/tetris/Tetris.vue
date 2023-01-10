@@ -376,7 +376,7 @@ const startBus = () => {
               </el-button>
             </div>
             <div class="tetris-operate-btn-panel">
-              <el-switch v-model="IsUseBg" @change="toggleUseBg" inline-prompt active-text="使用背景" inactive-text="禁用背景"
+              <el-switch v-model="IsUseBg" @change="toggleUseBg()" inline-prompt active-text="使用背景" inactive-text="禁用背景"
                 class="operBtnWidth" active-color="#003973" />
             </div>
           </div>
@@ -512,7 +512,7 @@ const startBus = () => {
               <span class="key-define-info" v-text="isFullscreen ? '退出全屏' : '进入全屏'" />
             </div>
             <div class="key-define">
-              <el-button @click="toggleUseBg" type="info" class="key-define-key" round color="#003973"
+              <el-button @click="toggleUseBg()" type="info" class="key-define-key" round color="#003973"
                 v-text="KeyDefine.bg" />
               <span class="key-define-info" v-text="IsUseBg ? '禁用背景' : '使用背景'" />
             </div>
