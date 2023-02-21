@@ -235,10 +235,11 @@ const randomInt = (max: number = 7): number => {
 };
 const currIdxs: number[] = [];
 const generateRandomIndex = () => {
+  const tmpIdxs: number[] = [];
   for (let i = 0; i < 7; ++i) {
-    currIdxs.push(i);
+    tmpIdxs.push(i);
   }
-  _.shuffle(currIdxs);
+  currIdxs.push(..._.shuffle(tmpIdxs));
 };
 /** 生成方块 */
 const generateRandomRect = (): RectType => {

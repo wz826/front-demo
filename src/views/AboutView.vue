@@ -5,6 +5,10 @@ import { useRoute, useRouter } from 'vue-router';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { Back, List, CircleCheck, CircleCheckFilled } from '@element-plus/icons-vue';
 import "element-plus/theme-chalk/src/notification.scss";
+
+import { RSocketClient, JsonSerializer, IdentitySerializer } from 'rsocket-core';
+import RSocketWebSocketClient from 'rsocket-websocket-client';
+
 const props = defineProps<{ id: string }>();
 const route = useRoute();
 const test = ref(route.params.test);
@@ -53,6 +57,60 @@ const goBack = () => {
 const onBack = () => {
   notify('Back')
 }
+
+
+// backend ws endpoint
+const wsURL = 'ws://localwsl.com:39898/rsocket';
+
+// rsocket client
+const client = new RSocketClient({
+  serializers: {
+    data: JsonSerializer,
+    metadata: IdentitySerializer
+  },
+  setup: {
+    keepAlive: 60000,
+    lifetime: 180000,
+    dataMimeType: 'application/json',
+    metadataMimeType: 'message/x.rsocket.routing.v0',
+  },
+  transport: new RSocketWebSocketClient({
+    url: wsURL
+  })
+});
+
+// error handler
+const errorHanlder = (e: any) => console.log(e);
+// response handler
+const responseHanlder = (payload: any) => {
+  const li = document.createElement('li');
+  li.innerText = payload.data;
+  li.classList.add('list-group-item', 'small')
+  document.getElementById('result')?.appendChild(li);
+}
+
+// request to rsocket-websocket and response handling
+const numberRequester = (socket: any, value: any) => {
+  socket.requestStream({
+    data: value,
+    metadata: String.fromCharCode('stream'.length) + 'stream'
+  }).subscribe({
+    onError: errorHanlder,
+    onNext: responseHanlder,
+    onSubscribe: (subscription: any) => {
+      subscription.request(100); // set it to some max value
+    }
+  })
+}
+
+// once the backend connection is established, register the event listeners
+client.connect().then((socket: any) => {
+  document.getElementById('n')?.addEventListener('change', ({ srcElement }) => {
+    let s = srcElement as HTMLInputElement;
+    numberRequester(socket, parseInt(s?.value));
+  })
+}, errorHanlder);
+
 </script>
 
 <template>
@@ -144,6 +202,20 @@ const onBack = () => {
           </el-row>
         </el-card>
       </el-card>
+
+      <div class="container mt-3">
+        <h1>RSocket-WebSocket Demo</h1>
+        <div class="row">
+          <div class="col">
+            <p class="font-weight-light mt-3">Enter number:</p>
+            <input type="text" class="form-control" id="n">
+          </div>
+        </div>
+        <div class="row">
+          <ul class="list-group mt-5 pl-2" id="result"></ul>
+        </div>
+      </div>
+
     </template>
   </el-page-header>
   <audio ref="bgAudio" loop />

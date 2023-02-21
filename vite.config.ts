@@ -24,9 +24,11 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
   const envPrefix = ["VITE_", "VENUS_"];
   const env = loadEnv(mode, root + envDir, envPrefix);
   // console.log(env);
-  const bigPkgNames = ["highlight.js", "prettier", "mermaid", "element-plus", "katex",
-    "lodash", "font_md-editor-v3", "md-editor-v3", "cropperjs", "dexie", "vue",];
-  return defineConfig({
+  // elkjs实在是太大了，依赖路径：elkjs ==> mermaid ==> md-editor-v3
+  const bigPkgNames = ["elkjs", "highlight.js", "mermaid", "prettier", "element-plus", "cytoscape", "katex", "md-editor-v3", "rsocket-core", 
+    "vue", "fortawesome", "lodash", "moment", "dexie", "font_md-editor-v3", "cropperjs", "vuedraggable", "sortablejs", "dagre-d3-es",];   
+  const pkgSet = new Set();
+  const userConfig: UserConfigExport = defineConfig({
     base: env.VITE_BASE_URL,
     envDir: env.VITE_ENV_DIR,
     envPrefix: envPrefix,
@@ -52,11 +54,15 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
         output: {
           manualChunks(id: string) {
             if (id.includes("node_modules")) {
-              const arr = id.split("node_modules/")[1].split("/")[0].split("@");
-              const pkg = arr.pop();
+              // console.log(id); TODO 后期可以优化，只选择有@符号的字符串元素
+              const arr = id.split("node_modules/")[1].split("/")[1].split("@");
+              // console.log(arr);
+              const pkg = arr.shift();
               if (pkg && bigPkgNames.includes(pkg)) {
                 return "_" + pkg;
               } else {
+                pkgSet.add(pkg);
+                // console.log(pkgSet);
                 return "__vendor";
               }
             }
@@ -128,4 +134,6 @@ export default ({ mode }: ConfigEnv): UserConfigExport => {
       }),
     ], // end plugins
   });
+  // console.log(pkgSet);
+  return userConfig;
 };
